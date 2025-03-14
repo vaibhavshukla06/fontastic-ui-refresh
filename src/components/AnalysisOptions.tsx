@@ -1,10 +1,15 @@
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Zap, BarChart, FileText, Variable, Globe } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { FontContext } from "@/contexts/FontContext";
+import { toast } from "sonner";
 
 const AnalysisOptions = () => {
+  const navigate = useNavigate();
+  const { fontFile } = useContext(FontContext);
   const [options, setOptions] = useState({
     visualizations: true,
     htmlReport: true,
@@ -21,6 +26,25 @@ const AnalysisOptions = () => {
 
   const handleAnalyze = () => {
     console.log("Analyzing with options:", options);
+    
+    if (!fontFile) {
+      toast.error("Please upload a font file first", {
+        description: "You need to upload a valid font file before analysis",
+      });
+      return;
+    }
+    
+    // Simulate font analysis (in a real app, this would perform actual analysis)
+    toast.success("Font analysis started", {
+      description: "Analyzing font characteristics...",
+    });
+    
+    // In a real implementation, you would process the font here
+    // and then navigate with the results
+    setTimeout(() => {
+      // Navigate to results page after "analysis" is complete
+      navigate("/analysis-results");
+    }, 1500);
   };
 
   return (

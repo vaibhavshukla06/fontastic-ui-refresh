@@ -10,8 +10,6 @@ import AnalysisOptions from "@/components/AnalysisOptions";
 import FeatureCard from "@/components/FeatureCard";
 import { toast } from "sonner";
 
-// framer-motion is already installed as a dependency, no need to dynamically add it
-
 const Index = () => {
   useEffect(() => {
     // Display a welcome toast when the component mounts

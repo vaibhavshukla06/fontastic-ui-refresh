@@ -1,18 +1,31 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BarChart3, FileType, Download, ArrowRight, ExternalLink } from 'lucide-react';
+import { BarChart3, FileType, Download, ArrowRight, ExternalLink, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
+import { FontContext } from '@/contexts/FontContext';
 
 const AnalysisResults = () => {
   const [activeTab, setActiveTab] = useState('fullReport');
+  const { fontFile, fontName } = useContext(FontContext);
+  const navigate = useNavigate();
+  
+  // Redirect if no font file is uploaded
+  React.useEffect(() => {
+    if (!fontFile) {
+      navigate('/');
+    }
+  }, [fontFile, navigate]);
   
   // Mock data - in a real app this would come from the font analysis
   const fontData = {
-    name: 'Moon Dance Regular',
-    format: 'TrueType',
+    name: fontName || 'Font Analysis',
+    format: fontFile?.name.endsWith('.ttf') ? 'TrueType' : 
+            fontFile?.name.endsWith('.otf') ? 'OpenType' : 
+            fontFile?.name.endsWith('.woff') ? 'WOFF' :
+            fontFile?.name.endsWith('.woff2') ? 'WOFF2' : 'Unknown',
     style: 'serif',
     weight: 'Regular (400)',
     width: 'Normal (5)'
@@ -44,11 +57,23 @@ const AnalysisResults = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl font-bold text-foreground">Font Analysis Results</h1>
-          <Button className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2">
-            <FileType className="w-4 h-4" />
-            Analyze Another Font
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => navigate('/')}
+              className="rounded-full"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <h1 className="text-3xl font-bold text-foreground">Font Analysis Results</h1>
+          </div>
+          <Link to="/">
+            <Button className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2">
+              <FileType className="w-4 h-4" />
+              Analyze Another Font
+            </Button>
+          </Link>
         </motion.div>
         
         <div className="flex gap-4 mb-6">

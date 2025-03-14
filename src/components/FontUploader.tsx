@@ -1,13 +1,14 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 import { motion } from "framer-motion";
 import { Upload, FileType } from "lucide-react";
 import { toast } from "sonner";
+import { FontContext } from "@/contexts/FontContext";
 
 const FontUploader = () => {
   const [isDragging, setIsDragging] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { fontFile, setFontFile } = useContext(FontContext);
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
@@ -48,7 +49,7 @@ const FontUploader = () => {
     const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
     
     if (validFormats.includes(fileExtension)) {
-      setFile(file);
+      setFontFile(file);
       toast.success("Font file uploaded successfully");
     } else {
       toast.error("Invalid file format. Please upload TTF, OTF, WOFF, or WOFF2");
@@ -71,7 +72,7 @@ const FontUploader = () => {
       <motion.div
         className={`upload-area rounded-xl h-60 flex flex-col items-center justify-center cursor-pointer ${
           isDragging ? "border-primary bg-primary/5" : ""
-        } ${file ? "bg-primary/5 border-primary/50" : ""}`}
+        } ${fontFile ? "bg-primary/5 border-primary/50" : ""}`}
         onClick={handleClick}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -88,18 +89,18 @@ const FontUploader = () => {
           onChange={handleFileChange}
         />
         
-        {file ? (
+        {fontFile ? (
           <div className="flex flex-col items-center justify-center text-center">
             <FileType className="h-12 w-12 text-primary mb-4 animate-pulse-soft" />
-            <p className="text-lg font-medium text-foreground">{file.name}</p>
+            <p className="text-lg font-medium text-foreground">{fontFile.name}</p>
             <p className="text-sm text-muted-foreground mt-1">
-              {(file.size / 1024).toFixed(2)} KB
+              {(fontFile.size / 1024).toFixed(2)} KB
             </p>
             <button 
               className="mt-4 text-sm text-primary hover:text-primary/80 transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
-                setFile(null);
+                setFontFile(null);
               }}
             >
               Remove & Upload Another
