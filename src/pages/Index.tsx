@@ -10,9 +10,7 @@ import AnalysisOptions from "@/components/AnalysisOptions";
 import FeatureCard from "@/components/FeatureCard";
 import { toast } from "sonner";
 
-// Add framer-motion as a dependency
-import { lov_add_dependency } from "lovable-tagger"; // Comment for build
-lov_add_dependency("framer-motion@latest"); // Comment for build
+// framer-motion is already installed as a dependency, no need to dynamically add it
 
 const Index = () => {
   useEffect(() => {
