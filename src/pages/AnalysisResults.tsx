@@ -2,7 +2,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BarChart3, FileType, Download, ArrowRight, Star, Check, Info } from 'lucide-react';
+import { BarChart3, FileType, Download, ArrowRight, Star, Info, FileBarChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import { FontContext, FontMetrics } from '@/contexts/FontContext';
@@ -97,6 +97,7 @@ const AnalysisResults = () => {
   const { fontFile, fontName, fontMetrics, setFontMetrics } = useContext(FontContext);
   const navigate = useNavigate();
   const visualizationsRef = useRef<HTMLDivElement>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
   
   // Redirect if no font file is uploaded
   useEffect(() => {
@@ -183,7 +184,7 @@ const AnalysisResults = () => {
     }
   };
   
-  // Mock data - in a real app this would come from the font analysis
+  // Font data
   const fontData = {
     name: fontName || 'Font Analysis',
     format: fontFile?.name.endsWith('.ttf') ? 'TrueType' : 
@@ -253,226 +254,208 @@ const AnalysisResults = () => {
           </TabsList>
           
           <TabsContent value="fullReport" className="mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Main report content */}
-              <motion.div 
-                className="glass-card rounded-xl p-6 shadow-lg lg:col-span-2"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <motion.h2 
-                  className="text-2xl font-bold text-center mb-4"
-                  variants={itemVariants}
-                >
+            <div ref={reportRef} className="max-w-4xl mx-auto bg-white border rounded-xl shadow-lg overflow-hidden">
+              {/* Report Header */}
+              <div className="px-8 py-6 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+                <h2 className="text-2xl font-bold text-center text-gray-800">
                   Font Analysis Report: {fontData.name}
-                </motion.h2>
-                
-                <motion.div 
-                  className="text-center text-muted-foreground mb-8"
-                  variants={itemVariants}
-                >
+                </h2>
+                <div className="text-center text-gray-500 mt-2">
                   Format: {fontData.format} | Style: {fontData.style}
-                </motion.div>
-                
-                {/* Basic Metrics */}
-                <motion.div 
-                  className="mt-8"
-                  variants={itemVariants}
-                >
-                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <Info className="w-5 h-5 text-primary" />
-                    Font Metrics
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                      <div className="text-muted-foreground mb-1">Weight</div>
-                      <div className="font-medium">{fontData.weight}</div>
-                    </div>
-                    
-                    <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                      <div className="text-muted-foreground mb-1">Width</div>
-                      <div className="font-medium">{fontData.width}</div>
-                    </div>
-
-                    <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                      <div className="text-muted-foreground mb-1">X-Height</div>
-                      <div className="font-medium">{fontMetrics?.xHeight || '0.52 em'}</div>
-                    </div>
-                    
-                    <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                      <div className="text-muted-foreground mb-1">Cap Height</div>
-                      <div className="font-medium">{fontMetrics?.capHeight || '0.72 em'}</div>
-                    </div>
-
-                    <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                      <div className="text-muted-foreground mb-1">Ascender</div>
-                      <div className="font-medium">{fontMetrics?.ascender || '0.82 em'}</div>
-                    </div>
-
-                    <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                      <div className="text-muted-foreground mb-1">Descender</div>
-                      <div className="font-medium">{fontMetrics?.descender || '0.22 em'}</div>
-                    </div>
-
-                    <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                      <div className="text-muted-foreground mb-1">Contrast</div>
-                      <div className="font-medium">{fontMetrics?.contrast || 'Medium (3.5)'}</div>
-                    </div>
-
-                    <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                      <div className="text-muted-foreground mb-1">Stroke Terminals</div>
-                      <div className="font-medium">{fontMetrics?.strokeTerminals || 'Rounded'}</div>
-                    </div>
-
-                    <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                      <div className="text-muted-foreground mb-1">Shape</div>
-                      <div className="font-medium">{fontMetrics?.shape || 'Moderately curvy'}</div>
-                    </div>
-                  </div>
-                </motion.div>
-                
-                {/* Character Set Information */}
-                <motion.div 
-                  className="mt-8"
-                  variants={itemVariants}
-                >
-                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-primary" />
-                    Character Set
-                  </h3>
-                  
-                  <div className="bg-white/60 p-5 rounded-lg mb-8 shadow-sm">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {Object.entries(characterSetInfo).map(([key, value], index) => (
-                        <div key={index} className="flex justify-between">
-                          <span className="capitalize text-muted-foreground">{key}:</span>
-                          <span className="font-medium">{value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-                
-                {/* OpenType Features */}
-                <motion.div 
-                  className="mt-8"
-                  variants={itemVariants}
-                >
-                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <FileType className="w-5 h-5 text-primary" />
-                    OpenType Features
-                  </h3>
-                  
-                  <div className="bg-white/60 p-5 rounded-lg shadow-sm">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {openTypeFeatures.map((feature, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-primary"></div>
-                          <span>{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Personality Analysis */}
-                <motion.div 
-                  className="mt-8"
-                  variants={itemVariants}
-                >
-                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <Star className="w-5 h-5 text-primary" />
-                    Personality Analysis
-                  </h3>
-                  
-                  <div className="bg-white/60 p-5 rounded-lg shadow-sm">
-                    <p className="text-muted-foreground italic">
-                      {personalityAnalysis}
-                    </p>
-                  </div>
-                </motion.div>
-                
-                {/* Font Sample */}
-                <motion.div 
-                  className="mt-8"
-                  variants={itemVariants}
-                >
-                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <FileType className="w-5 h-5 text-primary" />
-                    Font Sample
-                  </h3>
-                  
-                  <div className="bg-white/60 p-5 rounded-lg shadow-sm" style={{ fontFamily: fontName }}>
-                    <p className="text-3xl mb-3">ABCDEFGHIJKLM</p>
-                    <p className="text-3xl mb-5">abcdefghijklm</p>
-                    <p className="text-xl mb-3">The quick brown fox jumps over the lazy dog.</p>
-                    <p className="text-lg">0123456789 !@#$%^&*()</p>
-                  </div>
-                </motion.div>
-              </motion.div>
+                </div>
+              </div>
               
-              {/* Right sidebar with use cases */}
-              <motion.div 
-                className="glass-card rounded-xl p-6 shadow-lg h-fit lg:sticky lg:top-24"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                  <Check className="w-5 h-5 text-primary" />
-                  Recommended Use Cases
-                </h3>
+              {/* Font Metrics Section */}
+              <div className="px-8 py-6 border-b">
+                <div className="flex items-center gap-2 mb-4">
+                  <Info className="w-5 h-5 text-blue-500" />
+                  <h3 className="text-xl font-semibold text-gray-800">Font Metrics</h3>
+                </div>
                 
-                <div className="space-y-3 mb-6">
-                  <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                    <h4 className="font-medium text-primary mb-3">Suitable For:</h4>
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-500">Weight</div>
+                    <div className="font-medium">{fontData.weight}</div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-500">Width</div>
+                    <div className="font-medium">{fontData.width}</div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-500">X-Height</div>
+                    <div className="font-medium">{fontMetrics?.xHeight || '0.52 em'}</div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-500">Cap Height</div>
+                    <div className="font-medium">{fontMetrics?.capHeight || '0.72 em'}</div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-500">Ascender</div>
+                    <div className="font-medium">{fontMetrics?.ascender || '0.82 em'}</div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-500">Descender</div>
+                    <div className="font-medium">{fontMetrics?.descender || '0.22 em'}</div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-500">Contrast</div>
+                    <div className="font-medium">{fontMetrics?.contrast || 'Medium (3.5)'}</div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-500">Stroke Terminals</div>
+                    <div className="font-medium">{fontMetrics?.strokeTerminals || 'Rounded'}</div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-500">Shape</div>
+                    <div className="font-medium">{fontMetrics?.shape || 'Moderately curvy'}</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Character Set Section */}
+              <div className="px-8 py-6 border-b">
+                <div className="flex items-center gap-2 mb-4">
+                  <FileBarChart className="w-5 h-5 text-blue-500" />
+                  <h3 className="text-xl font-semibold text-gray-800">Character Set</h3>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Latin:</span>
+                    <span className="font-medium">{characterSetInfo.latin}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Numerals:</span>
+                    <span className="font-medium">{characterSetInfo.numerals}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Symbols:</span>
+                    <span className="font-medium">{characterSetInfo.symbols}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Punctuation:</span>
+                    <span className="font-medium">{characterSetInfo.punctuation}</span>
+                  </div>
+                  
+                  <div className="col-span-2 flex justify-between">
+                    <span className="text-gray-500">Languages:</span>
+                    <span className="font-medium">{characterSetInfo.languages}</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* OpenType Features */}
+              <div className="px-8 py-6 border-b">
+                <div className="flex items-center gap-2 mb-4">
+                  <FileType className="w-5 h-5 text-blue-500" />
+                  <h3 className="text-xl font-semibold text-gray-800">OpenType Features</h3>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  {openTypeFeatures.map((feature, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Personality Analysis */}
+              <div className="px-8 py-6 border-b">
+                <div className="flex items-center gap-2 mb-4">
+                  <Star className="w-5 h-5 text-blue-500" />
+                  <h3 className="text-xl font-semibold text-gray-800">Personality Analysis</h3>
+                </div>
+                
+                <p className="italic text-gray-600">
+                  {personalityAnalysis}
+                </p>
+              </div>
+              
+              {/* Font Sample */}
+              <div className="px-8 py-6 border-b">
+                <div className="flex items-center gap-2 mb-4">
+                  <FileType className="w-5 h-5 text-blue-500" />
+                  <h3 className="text-xl font-semibold text-gray-800">Font Sample</h3>
+                </div>
+                
+                <div className="rounded-lg bg-gray-50 p-6" style={{ fontFamily: fontName }}>
+                  <p className="text-3xl mb-3">ABCDEFGHIJKLM</p>
+                  <p className="text-3xl mb-5">abcdefghijklm</p>
+                  <p className="text-xl mb-3">The quick brown fox jumps over the lazy dog.</p>
+                  <p className="text-lg">0123456789 !@#$%^&*()</p>
+                </div>
+              </div>
+              
+              {/* Recommended Use Cases */}
+              <div className="px-8 py-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <ArrowRight className="w-5 h-5 text-blue-500" />
+                  <h3 className="text-xl font-semibold text-gray-800">Recommended Use Cases</h3>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                    <h4 className="font-medium text-green-700 mb-3">Suitable For:</h4>
                     <ul className="space-y-2">
                       {(fontMetrics?.recommendedUses || recommendedUses).map((use, index) => (
                         <li key={index} className="flex items-center gap-2">
-                          <ArrowRight className="w-3 h-3 text-primary flex-shrink-0" />
+                          <ArrowRight className="w-3 h-3 text-green-500 flex-shrink-0" />
                           <span className="text-sm">{use}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                   
-                  <div className="bg-white/60 p-4 rounded-lg shadow-sm">
-                    <h4 className="font-medium text-destructive mb-3">Less Suitable For:</h4>
+                  <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                    <h4 className="font-medium text-red-700 mb-3">Less Suitable For:</h4>
                     <ul className="space-y-2">
                       {(fontMetrics?.notRecommendedUses || notRecommendedUses).map((use, index) => (
                         <li key={index} className="flex items-center gap-2">
-                          <ArrowRight className="w-3 h-3 text-destructive flex-shrink-0" />
+                          <ArrowRight className="w-3 h-3 text-red-500 flex-shrink-0" />
                           <span className="text-sm">{use}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 </div>
-                
-                <div className="space-y-3 mt-8">
-                  <h3 className="text-xl font-semibold mb-4">Actions</h3>
-                  
-                  <Link to="/compare" className="action-button">
-                    <BarChart3 className="w-5 h-5" />
-                    Compare With Other Fonts
-                  </Link>
-                  
-                  <button 
-                    className="action-button"
-                    onClick={handleDownloadVisualizations}
-                  >
-                    <Download className="w-5 h-5" />
-                    Download All Visualizations
-                  </button>
-                </div>
-              </motion.div>
+              </div>
+            </div>
+            
+            {/* Actions */}
+            <div className="flex justify-center mt-8 gap-4">
+              <Button
+                variant="outline"
+                onClick={handleDownloadVisualizations}
+                className="flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download All Visualizations
+              </Button>
+              
+              <Link to="/compare">
+                <Button className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  Compare With Other Fonts
+                </Button>
+              </Link>
             </div>
           </TabsContent>
           
           <TabsContent value="visualizations" className="mt-0">
-            <div ref={visualizationsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div ref={visualizationsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {/* Font Personality Traits */}
               <Card className="shadow-md visualization-chart" data-name="personality-traits">
                 <CardHeader className="pb-2">
@@ -531,13 +514,24 @@ const AnalysisResults = () => {
                         <PolarGrid />
                         <PolarAngleAxis dataKey="subject" />
                         <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                        <Radar name={fontData.name} dataKey="A" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.6} />
+                        <Radar name={fontData.name} dataKey="A" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.6} />
                         <Legend />
                       </RadarChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
+            </div>
+            
+            {/* Visualization Download Button */}
+            <div className="flex justify-center mt-8">
+              <Button
+                onClick={handleDownloadVisualizations}
+                className="flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download All Visualizations
+              </Button>
             </div>
           </TabsContent>
         </Tabs>
