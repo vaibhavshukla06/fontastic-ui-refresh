@@ -21,6 +21,7 @@ export interface FontMetrics {
   personality?: FontPersonality;
   recommendedUses?: string[];
   notRecommendedUses?: string[];
+  fontPairings?: string[];
 }
 
 interface FontContextProps {

@@ -93,6 +93,14 @@ const notRecommendedUses = [
   "Display text at very small sizes"
 ];
 
+// Font pairing recommendations
+const fontPairings = [
+  "Open Sans (for body text)",
+  "Roboto (for UI elements)",
+  "Merriweather (for complementary headings)",
+  "Lato (for versatile use alongside)"
+];
+
 const AnalysisResults = () => {
   const [activeTab, setActiveTab] = useState('fullReport');
   const { fontFile, fontName, fontMetrics, setFontMetrics } = useContext(FontContext);
@@ -234,7 +242,7 @@ const AnalysisResults = () => {
             </Button>
             <h1 className="text-3xl font-bold text-foreground">Font Analysis Results</h1>
           </div>
-          <Link to="/">
+          <Link to="/analysis-results">
             <Button className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2">
               <FileType className="w-4 h-4" />
               Analyze Another Font
@@ -392,6 +400,27 @@ const AnalysisResults = () => {
                       </p>
                     </div>
                     
+                    {/* Font Pairings Recommendation */}
+                    <div className="px-8 py-6 border-b">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Star className="w-5 h-5 text-blue-500" />
+                        <h3 className="text-xl font-semibold text-gray-800">Font Pairing Recommendations</h3>
+                      </div>
+                      
+                      <p className="text-gray-600 mb-3">
+                        Based on this font's characteristics, it pairs well with:
+                      </p>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                        {fontPairings.map((font, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                            <span>{font}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
                     {/* Font Sample */}
                     <div className="px-8 py-6 border-b">
                       <div className="flex items-center gap-2 mb-4">
@@ -474,84 +503,144 @@ const AnalysisResults = () => {
           </TabsContent>
           
           <TabsContent value="visualizations" className="mt-0">
-            <div ref={visualizationsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto p-6 bg-white rounded-xl border">
-              {/* Font Personality Traits */}
-              <Card className="shadow-md visualization-chart" data-name="personality-traits">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Font Personality Traits</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={fontPersonalityData}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="trait" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="value" fill="#4f46e5" />
-                      </BarChart>
-                    </ResponsiveContainer>
+            <ResizablePanelGroup
+              direction="horizontal"
+              className="min-h-[600px] rounded-lg border"
+            >
+              {/* Left Panel - Visualizations */}
+              <ResizablePanel defaultSize={65} minSize={40}>
+                <div ref={visualizationsRef} className="h-full overflow-auto p-6 bg-white rounded-tl-xl">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    {/* Font Personality Traits */}
+                    <Card className="shadow-md visualization-chart" data-name="personality-traits">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Font Personality Traits</CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="h-[300px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                              data={fontPersonalityData}
+                              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="trait" />
+                              <YAxis />
+                              <Tooltip />
+                              <Bar dataKey="value" fill="#4f46e5" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    {/* Weight Distribution */}
+                    <Card className="shadow-md visualization-chart" data-name="weight-distribution">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Weight Distribution</CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="h-[300px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                              data={weightDistributionData}
+                              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="name" />
+                              <YAxis />
+                              <Tooltip />
+                              <Bar dataKey="weight" fill="#22c55e" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    {/* Character Proportions */}
+                    <Card className="shadow-md visualization-chart lg:col-span-2" data-name="character-proportions">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Character Proportions</CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="h-[300px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={characterProportionsData}>
+                              <PolarGrid />
+                              <PolarAngleAxis dataKey="subject" />
+                              <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                              <Radar name={fontData.name} dataKey="A" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.6} />
+                              <Legend />
+                            </RadarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </ResizablePanel>
               
-              {/* Weight Distribution */}
-              <Card className="shadow-md visualization-chart" data-name="weight-distribution">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Weight Distribution</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={weightDistributionData}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="weight" fill="#22c55e" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
+              <ResizableHandle withHandle />
               
-              {/* Character Proportions */}
-              <Card className="shadow-md visualization-chart lg:col-span-2" data-name="character-proportions">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Character Proportions</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={characterProportionsData}>
-                        <PolarGrid />
-                        <PolarAngleAxis dataKey="subject" />
-                        <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                        <Radar name={fontData.name} dataKey="A" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.6} />
-                        <Legend />
-                      </RadarChart>
-                    </ResponsiveContainer>
+              {/* Right Panel - Actions for Visualizations tab */}
+              <ResizablePanel defaultSize={35} minSize={30}>
+                <div className="h-full p-6 bg-gray-50 rounded-tr-xl">
+                  {/* Recommended Use Cases */}
+                  <div className="mb-8">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">Recommended Use Cases</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                        <h4 className="font-medium text-green-700 mb-3">Suitable For:</h4>
+                        <ul className="space-y-2">
+                          {(fontMetrics?.recommendedUses || recommendedUses).map((use, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <ArrowRight className="w-3 h-3 text-green-500 flex-shrink-0" />
+                              <span className="text-sm">{use}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                        <h4 className="font-medium text-red-700 mb-3">Less Suitable For:</h4>
+                        <ul className="space-y-2">
+                          {(fontMetrics?.notRecommendedUses || notRecommendedUses).map((use, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <ArrowRight className="w-3 h-3 text-red-500 flex-shrink-0" />
+                              <span className="text-sm">{use}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            {/* Visualization Download Button */}
-            <div className="flex justify-center mt-8">
-              <Button
-                onClick={handleDownloadVisualizations}
-                className="flex items-center gap-2 py-6 px-8 text-base"
-              >
-                <Download className="w-5 h-5" />
-                Download All Visualizations
-              </Button>
-            </div>
+                  
+                  {/* Actions */}
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">Actions</h3>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={handleDownloadVisualizations}
+                      className="w-full flex items-center justify-center gap-2 py-6 text-base"
+                    >
+                      <Download className="w-5 h-5" />
+                      Download All Visualizations
+                    </Button>
+                    
+                    <Link to="/compare" className="block w-full">
+                      <Button 
+                        className="w-full flex items-center justify-center gap-2 py-6 text-base"
+                      >
+                        <BarChart3 className="w-5 h-5" />
+                        Compare With Other Fonts
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </TabsContent>
         </Tabs>
       </main>
