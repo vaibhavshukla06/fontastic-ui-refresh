@@ -6,6 +6,7 @@ interface FontContextProps {
   setFontFile: (file: File | null) => void;
   fontName: string;
   fontMetrics: any;
+  setFontMetrics: (metrics: any) => void;
 }
 
 export const FontContext = createContext<FontContextProps>({
@@ -13,6 +14,7 @@ export const FontContext = createContext<FontContextProps>({
   setFontFile: () => {},
   fontName: "",
   fontMetrics: null,
+  setFontMetrics: () => {},
 });
 
 interface FontProviderProps {
@@ -33,6 +35,7 @@ export const FontProvider = ({ children }: FontProviderProps) => {
         setFontFile,
         fontName,
         fontMetrics,
+        setFontMetrics,
       }}
     >
       {children}
