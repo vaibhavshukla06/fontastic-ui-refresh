@@ -256,7 +256,7 @@ const AnalysisResults = () => {
         </motion.div>
         
         <Tabs defaultValue="fullReport" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-6 mx-auto flex w-auto px-0">
+          <TabsList className="mb-6 mx-auto flex justify-center w-auto px-0">
             <TabsTrigger value="fullReport" className="flex items-center gap-2">
               <FileType className="w-5 h-5" />
               Full Report
