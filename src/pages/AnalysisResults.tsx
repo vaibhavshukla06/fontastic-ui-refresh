@@ -24,6 +24,7 @@ import {
   Radar,
   Legend
 } from 'recharts';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -254,208 +255,226 @@ const AnalysisResults = () => {
           </TabsList>
           
           <TabsContent value="fullReport" className="mt-0">
-            <div ref={reportRef} className="max-w-4xl mx-auto bg-white border rounded-xl shadow-lg overflow-hidden">
-              {/* Report Header */}
-              <div className="px-8 py-6 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
-                <h2 className="text-2xl font-bold text-center text-gray-800">
-                  Font Analysis Report: {fontData.name}
-                </h2>
-                <div className="text-center text-gray-500 mt-2">
-                  Format: {fontData.format} | Style: {fontData.style}
-                </div>
-              </div>
-              
-              {/* Font Metrics Section */}
-              <div className="px-8 py-6 border-b">
-                <div className="flex items-center gap-2 mb-4">
-                  <Info className="w-5 h-5 text-blue-500" />
-                  <h3 className="text-xl font-semibold text-gray-800">Font Metrics</h3>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-6">
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500">Weight</div>
-                    <div className="font-medium">{fontData.weight}</div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500">Width</div>
-                    <div className="font-medium">{fontData.width}</div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500">X-Height</div>
-                    <div className="font-medium">{fontMetrics?.xHeight || '0.52 em'}</div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500">Cap Height</div>
-                    <div className="font-medium">{fontMetrics?.capHeight || '0.72 em'}</div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500">Ascender</div>
-                    <div className="font-medium">{fontMetrics?.ascender || '0.82 em'}</div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500">Descender</div>
-                    <div className="font-medium">{fontMetrics?.descender || '0.22 em'}</div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500">Contrast</div>
-                    <div className="font-medium">{fontMetrics?.contrast || 'Medium (3.5)'}</div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500">Stroke Terminals</div>
-                    <div className="font-medium">{fontMetrics?.strokeTerminals || 'Rounded'}</div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <div className="text-sm text-gray-500">Shape</div>
-                    <div className="font-medium">{fontMetrics?.shape || 'Moderately curvy'}</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Character Set Section */}
-              <div className="px-8 py-6 border-b">
-                <div className="flex items-center gap-2 mb-4">
-                  <FileBarChart className="w-5 h-5 text-blue-500" />
-                  <h3 className="text-xl font-semibold text-gray-800">Character Set</h3>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Latin:</span>
-                    <span className="font-medium">{characterSetInfo.latin}</span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Numerals:</span>
-                    <span className="font-medium">{characterSetInfo.numerals}</span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Symbols:</span>
-                    <span className="font-medium">{characterSetInfo.symbols}</span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Punctuation:</span>
-                    <span className="font-medium">{characterSetInfo.punctuation}</span>
-                  </div>
-                  
-                  <div className="col-span-2 flex justify-between">
-                    <span className="text-gray-500">Languages:</span>
-                    <span className="font-medium">{characterSetInfo.languages}</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* OpenType Features */}
-              <div className="px-8 py-6 border-b">
-                <div className="flex items-center gap-2 mb-4">
-                  <FileType className="w-5 h-5 text-blue-500" />
-                  <h3 className="text-xl font-semibold text-gray-800">OpenType Features</h3>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  {openTypeFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                      <span>{feature}</span>
+            <ResizablePanelGroup
+              direction="horizontal"
+              className="min-h-[600px] rounded-lg border"
+            >
+              {/* Left Panel - Report */}
+              <ResizablePanel defaultSize={65} minSize={40}>
+                <div ref={reportRef} className="h-full overflow-auto">
+                  <div className="bg-white rounded-tl-xl overflow-hidden">
+                    {/* Report Header */}
+                    <div className="px-8 py-6 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+                      <h2 className="text-2xl font-bold text-center text-gray-800">
+                        Font Analysis Report: {fontData.name}
+                      </h2>
+                      <div className="text-center text-gray-500 mt-2">
+                        Format: {fontData.format} | Style: {fontData.style}
+                      </div>
                     </div>
-                  ))}
+                    
+                    {/* Font Metrics Section */}
+                    <div className="px-8 py-6 border-b">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Info className="w-5 h-5 text-blue-500" />
+                        <h3 className="text-xl font-semibold text-gray-800">Font Metrics</h3>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-6">
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-500">Weight</div>
+                          <div className="font-medium">{fontData.weight}</div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-500">Width</div>
+                          <div className="font-medium">{fontData.width}</div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-500">X-Height</div>
+                          <div className="font-medium">{fontMetrics?.xHeight || '0.52 em'}</div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-500">Cap Height</div>
+                          <div className="font-medium">{fontMetrics?.capHeight || '0.72 em'}</div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-500">Ascender</div>
+                          <div className="font-medium">{fontMetrics?.ascender || '0.82 em'}</div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-500">Descender</div>
+                          <div className="font-medium">{fontMetrics?.descender || '0.22 em'}</div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-500">Contrast</div>
+                          <div className="font-medium">{fontMetrics?.contrast || 'Medium (3.5)'}</div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-500">Stroke Terminals</div>
+                          <div className="font-medium">{fontMetrics?.strokeTerminals || 'Rounded'}</div>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-500">Shape</div>
+                          <div className="font-medium">{fontMetrics?.shape || 'Moderately curvy'}</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Character Set Section */}
+                    <div className="px-8 py-6 border-b">
+                      <div className="flex items-center gap-2 mb-4">
+                        <FileBarChart className="w-5 h-5 text-blue-500" />
+                        <h3 className="text-xl font-semibold text-gray-800">Character Set</h3>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Latin:</span>
+                          <span className="font-medium">{characterSetInfo.latin}</span>
+                        </div>
+                        
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Numerals:</span>
+                          <span className="font-medium">{characterSetInfo.numerals}</span>
+                        </div>
+                        
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Symbols:</span>
+                          <span className="font-medium">{characterSetInfo.symbols}</span>
+                        </div>
+                        
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Punctuation:</span>
+                          <span className="font-medium">{characterSetInfo.punctuation}</span>
+                        </div>
+                        
+                        <div className="col-span-2 flex justify-between">
+                          <span className="text-gray-500">Languages:</span>
+                          <span className="font-medium">{characterSetInfo.languages}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* OpenType Features */}
+                    <div className="px-8 py-6 border-b">
+                      <div className="flex items-center gap-2 mb-4">
+                        <FileType className="w-5 h-5 text-blue-500" />
+                        <h3 className="text-xl font-semibold text-gray-800">OpenType Features</h3>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                        {openTypeFeatures.map((feature, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Personality Analysis */}
+                    <div className="px-8 py-6 border-b">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Star className="w-5 h-5 text-blue-500" />
+                        <h3 className="text-xl font-semibold text-gray-800">Personality Analysis</h3>
+                      </div>
+                      
+                      <p className="italic text-gray-600">
+                        {personalityAnalysis}
+                      </p>
+                    </div>
+                    
+                    {/* Font Sample */}
+                    <div className="px-8 py-6 border-b">
+                      <div className="flex items-center gap-2 mb-4">
+                        <FileType className="w-5 h-5 text-blue-500" />
+                        <h3 className="text-xl font-semibold text-gray-800">Font Sample</h3>
+                      </div>
+                      
+                      <div className="rounded-lg bg-gray-50 p-6" style={{ fontFamily: fontName }}>
+                        <p className="text-3xl mb-3">ABCDEFGHIJKLM</p>
+                        <p className="text-3xl mb-5">abcdefghijklm</p>
+                        <p className="text-xl mb-3">The quick brown fox jumps over the lazy dog.</p>
+                        <p className="text-lg">0123456789 !@#$%^&*()</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </ResizablePanel>
               
-              {/* Personality Analysis */}
-              <div className="px-8 py-6 border-b">
-                <div className="flex items-center gap-2 mb-4">
-                  <Star className="w-5 h-5 text-blue-500" />
-                  <h3 className="text-xl font-semibold text-gray-800">Personality Analysis</h3>
-                </div>
-                
-                <p className="italic text-gray-600">
-                  {personalityAnalysis}
-                </p>
-              </div>
+              <ResizableHandle withHandle />
               
-              {/* Font Sample */}
-              <div className="px-8 py-6 border-b">
-                <div className="flex items-center gap-2 mb-4">
-                  <FileType className="w-5 h-5 text-blue-500" />
-                  <h3 className="text-xl font-semibold text-gray-800">Font Sample</h3>
-                </div>
-                
-                <div className="rounded-lg bg-gray-50 p-6" style={{ fontFamily: fontName }}>
-                  <p className="text-3xl mb-3">ABCDEFGHIJKLM</p>
-                  <p className="text-3xl mb-5">abcdefghijklm</p>
-                  <p className="text-xl mb-3">The quick brown fox jumps over the lazy dog.</p>
-                  <p className="text-lg">0123456789 !@#$%^&*()</p>
-                </div>
-              </div>
-              
-              {/* Recommended Use Cases */}
-              <div className="px-8 py-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <ArrowRight className="w-5 h-5 text-blue-500" />
-                  <h3 className="text-xl font-semibold text-gray-800">Recommended Use Cases</h3>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-100">
-                    <h4 className="font-medium text-green-700 mb-3">Suitable For:</h4>
-                    <ul className="space-y-2">
-                      {(fontMetrics?.recommendedUses || recommendedUses).map((use, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <ArrowRight className="w-3 h-3 text-green-500 flex-shrink-0" />
-                          <span className="text-sm">{use}</span>
-                        </li>
-                      ))}
-                    </ul>
+              {/* Right Panel - Recommended Uses and Actions */}
+              <ResizablePanel defaultSize={35} minSize={30}>
+                <div className="h-full p-6 bg-gray-50 rounded-tr-xl">
+                  {/* Recommended Use Cases */}
+                  <div className="mb-8">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">Recommended Use Cases</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                        <h4 className="font-medium text-green-700 mb-3">Suitable For:</h4>
+                        <ul className="space-y-2">
+                          {(fontMetrics?.recommendedUses || recommendedUses).map((use, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <ArrowRight className="w-3 h-3 text-green-500 flex-shrink-0" />
+                              <span className="text-sm">{use}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <div className="bg-red-50 rounded-lg p-4 border border-red-100">
+                        <h4 className="font-medium text-red-700 mb-3">Less Suitable For:</h4>
+                        <ul className="space-y-2">
+                          {(fontMetrics?.notRecommendedUses || notRecommendedUses).map((use, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <ArrowRight className="w-3 h-3 text-red-500 flex-shrink-0" />
+                              <span className="text-sm">{use}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div className="bg-red-50 rounded-lg p-4 border border-red-100">
-                    <h4 className="font-medium text-red-700 mb-3">Less Suitable For:</h4>
-                    <ul className="space-y-2">
-                      {(fontMetrics?.notRecommendedUses || notRecommendedUses).map((use, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <ArrowRight className="w-3 h-3 text-red-500 flex-shrink-0" />
-                          <span className="text-sm">{use}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  {/* Actions */}
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">Actions</h3>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={handleDownloadVisualizations}
+                      className="w-full flex items-center justify-center gap-2 py-6 text-base"
+                    >
+                      <Download className="w-5 h-5" />
+                      Download All Visualizations
+                    </Button>
+                    
+                    <Link to="/compare" className="block w-full">
+                      <Button 
+                        className="w-full flex items-center justify-center gap-2 py-6 text-base"
+                      >
+                        <BarChart3 className="w-5 h-5" />
+                        Compare With Other Fonts
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-              </div>
-            </div>
-            
-            {/* Actions */}
-            <div className="flex justify-center mt-8 gap-4">
-              <Button
-                variant="outline"
-                onClick={handleDownloadVisualizations}
-                className="flex items-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Download All Visualizations
-              </Button>
-              
-              <Link to="/compare">
-                <Button className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" />
-                  Compare With Other Fonts
-                </Button>
-              </Link>
-            </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </TabsContent>
           
           <TabsContent value="visualizations" className="mt-0">
-            <div ref={visualizationsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div ref={visualizationsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto p-6 bg-white rounded-xl border">
               {/* Font Personality Traits */}
               <Card className="shadow-md visualization-chart" data-name="personality-traits">
                 <CardHeader className="pb-2">
@@ -527,9 +546,9 @@ const AnalysisResults = () => {
             <div className="flex justify-center mt-8">
               <Button
                 onClick={handleDownloadVisualizations}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 py-6 px-8 text-base"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-5 h-5" />
                 Download All Visualizations
               </Button>
             </div>
