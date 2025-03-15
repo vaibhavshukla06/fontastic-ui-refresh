@@ -1,4 +1,3 @@
-
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -9,53 +8,76 @@ import { FontContext, FontMetrics } from '@/contexts/FontContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import {
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  Legend
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
 // Mock data for visualizations
-const fontPersonalityData = [
-  { trait: 'Professional', value: 80 },
-  { trait: 'Elegant', value: 65 },
-  { trait: 'Friendly', value: 45 },
-  { trait: 'Playful', value: 30 },
-  { trait: 'Modern', value: 70 },
-  { trait: 'Traditional', value: 50 },
-];
-
-const weightDistributionData = [
-  { name: 'Thin', weight: 15 },
-  { name: 'Light', weight: 25 },
-  { name: 'Regular', weight: 40 },
-  { name: 'Medium', weight: 30 },
-  { name: 'Bold', weight: 20 },
-  { name: 'Black', weight: 10 },
-];
-
-const characterProportionsData = [
-  { subject: 'Ascender', A: 80, fullMark: 100 },
-  { subject: 'Descender', A: 55, fullMark: 100 },
-  { subject: 'X-Height', A: 70, fullMark: 100 },
-  { subject: 'Width', A: 65, fullMark: 100 },
-  { subject: 'Contrast', A: 45, fullMark: 100 },
-  { subject: 'Counter', A: 60, fullMark: 100 },
-];
+const fontPersonalityData = [{
+  trait: 'Professional',
+  value: 80
+}, {
+  trait: 'Elegant',
+  value: 65
+}, {
+  trait: 'Friendly',
+  value: 45
+}, {
+  trait: 'Playful',
+  value: 30
+}, {
+  trait: 'Modern',
+  value: 70
+}, {
+  trait: 'Traditional',
+  value: 50
+}];
+const weightDistributionData = [{
+  name: 'Thin',
+  weight: 15
+}, {
+  name: 'Light',
+  weight: 25
+}, {
+  name: 'Regular',
+  weight: 40
+}, {
+  name: 'Medium',
+  weight: 30
+}, {
+  name: 'Bold',
+  weight: 20
+}, {
+  name: 'Black',
+  weight: 10
+}];
+const characterProportionsData = [{
+  subject: 'Ascender',
+  A: 80,
+  fullMark: 100
+}, {
+  subject: 'Descender',
+  A: 55,
+  fullMark: 100
+}, {
+  subject: 'X-Height',
+  A: 70,
+  fullMark: 100
+}, {
+  subject: 'Width',
+  A: 65,
+  fullMark: 100
+}, {
+  subject: 'Contrast',
+  A: 45,
+  fullMark: 100
+}, {
+  subject: 'Counter',
+  A: 60,
+  fullMark: 100
+}];
 
 // Character set data
 const characterSetInfo = {
@@ -67,47 +89,29 @@ const characterSetInfo = {
 };
 
 // OpenType features
-const openTypeFeatures = [
-  'liga - Standard Ligatures',
-  'kern - Kerning',
-  'frac - Fractions',
-  'smcp - Small Capitals'
-];
+const openTypeFeatures = ['liga - Standard Ligatures', 'kern - Kerning', 'frac - Fractions', 'smcp - Small Capitals'];
 
 // Mock personality analysis
-const personalityAnalysis = 
-  "This font projects considerable formality and seriousness, has a welcoming and approachable quality, has a somewhat gentle character, exudes sophistication and elegance, has somewhat traditional characteristics, and has a touch of playfulness.";
+const personalityAnalysis = "This font projects considerable formality and seriousness, has a welcoming and approachable quality, has a somewhat gentle character, exudes sophistication and elegance, has somewhat traditional characteristics, and has a touch of playfulness.";
 
 // Mock recommended use cases
-const recommendedUses = [
-  "Business documents and presentations",
-  "Formal invitations",
-  "Book covers and interior text",
-  "Academic publications"
-];
-
-const notRecommendedUses = [
-  "Children's publications",
-  "Casual social media content",
-  "Mobile interfaces requiring compact text",
-  "Display text at very small sizes"
-];
+const recommendedUses = ["Business documents and presentations", "Formal invitations", "Book covers and interior text", "Academic publications"];
+const notRecommendedUses = ["Children's publications", "Casual social media content", "Mobile interfaces requiring compact text", "Display text at very small sizes"];
 
 // Font pairing recommendations
-const fontPairings = [
-  "Open Sans (for body text)",
-  "Roboto (for UI elements)",
-  "Merriweather (for complementary headings)",
-  "Lato (for versatile use alongside)"
-];
-
+const fontPairings = ["Open Sans (for body text)", "Roboto (for UI elements)", "Merriweather (for complementary headings)", "Lato (for versatile use alongside)"];
 const AnalysisResults = () => {
   const [activeTab, setActiveTab] = useState('fullReport');
-  const { fontFile, fontName, fontMetrics, setFontMetrics } = useContext(FontContext);
+  const {
+    fontFile,
+    fontName,
+    fontMetrics,
+    setFontMetrics
+  } = useContext(FontContext);
   const navigate = useNavigate();
   const visualizationsRef = useRef<HTMLDivElement>(null);
   const reportRef = useRef<HTMLDivElement>(null);
-  
+
   // Redirect if no font file is uploaded
   useEffect(() => {
     if (!fontFile) {
@@ -135,109 +139,110 @@ const AnalysisResults = () => {
       });
     }
   }, [fontFile, navigate, fontMetrics, setFontMetrics]);
-  
+
   // Function to handle downloading all visualizations
   const handleDownloadVisualizations = async () => {
     if (!visualizationsRef.current) {
       toast.error('Could not find visualizations to download');
       return;
     }
-
     try {
       toast.info('Preparing visualizations for download...', {
-        description: 'This may take a few seconds',
+        description: 'This may take a few seconds'
       });
-      
       const zip = new JSZip();
       const chartElements = visualizationsRef.current.querySelectorAll('.visualization-chart');
-      
       if (chartElements.length === 0) {
         toast.error('No visualizations found to download');
         return;
       }
-      
+
       // Convert each chart to canvas and add to zip
       for (let i = 0; i < chartElements.length; i++) {
         const chart = chartElements[i] as HTMLElement;
         const canvas = await html2canvas(chart, {
           backgroundColor: '#FFFFFF',
-          scale: 2, // Better quality
+          scale: 2 // Better quality
         });
-        
+
         // Convert canvas to blob
-        const blob = await new Promise<Blob>((resolve) => {
-          canvas.toBlob((blob) => {
-            if (blob) resolve(blob);
-            else resolve(new Blob([''], { type: 'image/png' }));
+        const blob = await new Promise<Blob>(resolve => {
+          canvas.toBlob(blob => {
+            if (blob) resolve(blob);else resolve(new Blob([''], {
+              type: 'image/png'
+            }));
           }, 'image/png');
         });
-        
+
         // Add to zip
-        const chartName = chart.getAttribute('data-name') || `chart-${i+1}`;
+        const chartName = chart.getAttribute('data-name') || `chart-${i + 1}`;
         zip.file(`${fontName || 'font'}-${chartName}.png`, blob);
       }
-      
+
       // Generate and download the zip file
-      const content = await zip.generateAsync({ type: 'blob' });
+      const content = await zip.generateAsync({
+        type: 'blob'
+      });
       saveAs(content, `${fontName || 'font'}-visualizations.zip`);
-      
       toast.success('All visualizations downloaded successfully', {
         description: 'Visualizations have been saved to your downloads folder',
-        position: 'bottom-right',
+        position: 'bottom-right'
       });
     } catch (error) {
       console.error('Error downloading visualizations:', error);
       toast.error('Failed to download visualizations', {
-        description: 'An unexpected error occurred',
+        description: 'An unexpected error occurred'
       });
     }
   };
-  
+
   // Font data
   const fontData = {
     name: fontName || 'Font Analysis',
-    format: fontFile?.name.endsWith('.ttf') ? 'TrueType' : 
-            fontFile?.name.endsWith('.otf') ? 'OpenType' : 
-            fontFile?.name.endsWith('.woff') ? 'WOFF' :
-            fontFile?.name.endsWith('.woff2') ? 'WOFF2' : 'Unknown',
+    format: fontFile?.name.endsWith('.ttf') ? 'TrueType' : fontFile?.name.endsWith('.otf') ? 'OpenType' : fontFile?.name.endsWith('.woff') ? 'WOFF' : fontFile?.name.endsWith('.woff2') ? 'WOFF2' : 'Unknown',
     style: 'serif',
     weight: 'Regular (400)',
     width: 'Normal (5)'
   };
-  
   const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
+    hidden: {
+      opacity: 0
+    },
+    visible: {
       opacity: 1,
-      transition: { 
+      transition: {
         staggerChildren: 0.1
       }
     }
   };
-  
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+    hidden: {
+      y: 20,
+      opacity: 0
+    },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5
+      }
+    }
   };
-
-  return (
-    <div className="min-h-screen pb-20">
+  return <div className="min-h-screen pb-20">
       <Navbar />
       
       <main className="container mx-auto px-4 pt-20">
-        <motion.div 
-          className="flex justify-between items-center mb-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <motion.div className="flex justify-between items-center mb-8" initial={{
+        opacity: 0,
+        y: -20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        duration: 0.5
+      }}>
           <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => navigate('/')}
-              className="rounded-full"
-            >
+            <Button variant="outline" size="icon" onClick={() => navigate('/')} className="rounded-full">
               <ArrowRight className="w-4 h-4 rotate-180" />
             </Button>
             <h1 className="text-3xl font-bold text-foreground">Font Analysis Results</h1>
@@ -251,7 +256,7 @@ const AnalysisResults = () => {
         </motion.div>
         
         <Tabs defaultValue="fullReport" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-6 mx-auto flex justify-center w-auto">
+          <TabsList className="mb-6 mx-auto flex w-auto px-0">
             <TabsTrigger value="fullReport" className="flex items-center gap-2">
               <FileType className="w-5 h-5" />
               Full Report
@@ -263,10 +268,7 @@ const AnalysisResults = () => {
           </TabsList>
           
           <TabsContent value="fullReport" className="mt-0">
-            <ResizablePanelGroup
-              direction="horizontal"
-              className="min-h-[600px] rounded-lg border"
-            >
+            <ResizablePanelGroup direction="horizontal" className="min-h-[600px] rounded-lg border">
               {/* Left Panel - Report */}
               <ResizablePanel defaultSize={65} minSize={40}>
                 <div ref={reportRef} className="h-full overflow-auto">
@@ -379,12 +381,10 @@ const AnalysisResults = () => {
                       </div>
                       
                       <div className="grid grid-cols-2 gap-3">
-                        {openTypeFeatures.map((feature, index) => (
-                          <div key={index} className="flex items-center gap-2">
+                        {openTypeFeatures.map((feature, index) => <div key={index} className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-blue-500"></div>
                             <span>{feature}</span>
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
                     </div>
                     
@@ -412,12 +412,10 @@ const AnalysisResults = () => {
                       </p>
                       
                       <div className="grid grid-cols-2 gap-3">
-                        {fontPairings.map((font, index) => (
-                          <div key={index} className="flex items-center gap-2">
+                        {fontPairings.map((font, index) => <div key={index} className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-green-500"></div>
                             <span>{font}</span>
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
                     </div>
                     
@@ -428,7 +426,9 @@ const AnalysisResults = () => {
                         <h3 className="text-xl font-semibold text-gray-800">Font Sample</h3>
                       </div>
                       
-                      <div className="rounded-lg bg-gray-50 p-6" style={{ fontFamily: fontName }}>
+                      <div className="rounded-lg bg-gray-50 p-6" style={{
+                      fontFamily: fontName
+                    }}>
                         <p className="text-3xl mb-3">ABCDEFGHIJKLM</p>
                         <p className="text-3xl mb-5">abcdefghijklm</p>
                         <p className="text-xl mb-3">The quick brown fox jumps over the lazy dog.</p>
@@ -452,24 +452,20 @@ const AnalysisResults = () => {
                       <div className="bg-green-50 rounded-lg p-4 border border-green-100">
                         <h4 className="font-medium text-green-700 mb-3">Suitable For:</h4>
                         <ul className="space-y-2">
-                          {(fontMetrics?.recommendedUses || recommendedUses).map((use, index) => (
-                            <li key={index} className="flex items-center gap-2">
+                          {(fontMetrics?.recommendedUses || recommendedUses).map((use, index) => <li key={index} className="flex items-center gap-2">
                               <ArrowRight className="w-3 h-3 text-green-500 flex-shrink-0" />
                               <span className="text-sm">{use}</span>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
                       </div>
                       
                       <div className="bg-red-50 rounded-lg p-4 border border-red-100">
                         <h4 className="font-medium text-red-700 mb-3">Less Suitable For:</h4>
                         <ul className="space-y-2">
-                          {(fontMetrics?.notRecommendedUses || notRecommendedUses).map((use, index) => (
-                            <li key={index} className="flex items-center gap-2">
+                          {(fontMetrics?.notRecommendedUses || notRecommendedUses).map((use, index) => <li key={index} className="flex items-center gap-2">
                               <ArrowRight className="w-3 h-3 text-red-500 flex-shrink-0" />
                               <span className="text-sm">{use}</span>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
                       </div>
                     </div>
@@ -479,19 +475,13 @@ const AnalysisResults = () => {
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">Actions</h3>
                     
-                    <Button
-                      variant="outline"
-                      onClick={handleDownloadVisualizations}
-                      className="w-full flex items-center justify-center gap-2 py-6 text-base"
-                    >
+                    <Button variant="outline" onClick={handleDownloadVisualizations} className="w-full flex items-center justify-center gap-2 py-6 text-base">
                       <Download className="w-5 h-5" />
                       Download All Visualizations
                     </Button>
                     
                     <Link to="/compare" className="block w-full">
-                      <Button 
-                        className="w-full flex items-center justify-center gap-2 py-6 text-base"
-                      >
+                      <Button className="w-full flex items-center justify-center gap-2 py-6 text-base">
                         <BarChart3 className="w-5 h-5" />
                         Compare With Other Fonts
                       </Button>
@@ -503,10 +493,7 @@ const AnalysisResults = () => {
           </TabsContent>
           
           <TabsContent value="visualizations" className="mt-0">
-            <ResizablePanelGroup
-              direction="horizontal"
-              className="min-h-[600px] rounded-lg border"
-            >
+            <ResizablePanelGroup direction="horizontal" className="min-h-[600px] rounded-lg border">
               {/* Left Panel - Visualizations */}
               <ResizablePanel defaultSize={65} minSize={40}>
                 <div ref={visualizationsRef} className="h-full overflow-auto p-6 bg-white rounded-tl-xl">
@@ -519,10 +506,12 @@ const AnalysisResults = () => {
                       <CardContent className="pt-0">
                         <div className="h-[300px] w-full">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                              data={fontPersonalityData}
-                              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                            >
+                            <BarChart data={fontPersonalityData} margin={{
+                            top: 20,
+                            right: 30,
+                            left: 20,
+                            bottom: 5
+                          }}>
                               <CartesianGrid strokeDasharray="3 3" />
                               <XAxis dataKey="trait" />
                               <YAxis />
@@ -542,10 +531,12 @@ const AnalysisResults = () => {
                       <CardContent className="pt-0">
                         <div className="h-[300px] w-full">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                              data={weightDistributionData}
-                              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                            >
+                            <BarChart data={weightDistributionData} margin={{
+                            top: 20,
+                            right: 30,
+                            left: 20,
+                            bottom: 5
+                          }}>
                               <CartesianGrid strokeDasharray="3 3" />
                               <XAxis dataKey="name" />
                               <YAxis />
@@ -593,24 +584,20 @@ const AnalysisResults = () => {
                       <div className="bg-green-50 rounded-lg p-4 border border-green-100">
                         <h4 className="font-medium text-green-700 mb-3">Suitable For:</h4>
                         <ul className="space-y-2">
-                          {(fontMetrics?.recommendedUses || recommendedUses).map((use, index) => (
-                            <li key={index} className="flex items-center gap-2">
+                          {(fontMetrics?.recommendedUses || recommendedUses).map((use, index) => <li key={index} className="flex items-center gap-2">
                               <ArrowRight className="w-3 h-3 text-green-500 flex-shrink-0" />
                               <span className="text-sm">{use}</span>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
                       </div>
                       
                       <div className="bg-red-50 rounded-lg p-4 border border-red-100">
                         <h4 className="font-medium text-red-700 mb-3">Less Suitable For:</h4>
                         <ul className="space-y-2">
-                          {(fontMetrics?.notRecommendedUses || notRecommendedUses).map((use, index) => (
-                            <li key={index} className="flex items-center gap-2">
+                          {(fontMetrics?.notRecommendedUses || notRecommendedUses).map((use, index) => <li key={index} className="flex items-center gap-2">
                               <ArrowRight className="w-3 h-3 text-red-500 flex-shrink-0" />
                               <span className="text-sm">{use}</span>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
                       </div>
                     </div>
@@ -620,19 +607,13 @@ const AnalysisResults = () => {
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">Actions</h3>
                     
-                    <Button
-                      variant="outline"
-                      onClick={handleDownloadVisualizations}
-                      className="w-full flex items-center justify-center gap-2 py-6 text-base"
-                    >
+                    <Button variant="outline" onClick={handleDownloadVisualizations} className="w-full flex items-center justify-center gap-2 py-6 text-base">
                       <Download className="w-5 h-5" />
                       Download All Visualizations
                     </Button>
                     
                     <Link to="/compare" className="block w-full">
-                      <Button 
-                        className="w-full flex items-center justify-center gap-2 py-6 text-base"
-                      >
+                      <Button className="w-full flex items-center justify-center gap-2 py-6 text-base">
                         <BarChart3 className="w-5 h-5" />
                         Compare With Other Fonts
                       </Button>
@@ -653,8 +634,6 @@ const AnalysisResults = () => {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default AnalysisResults;
